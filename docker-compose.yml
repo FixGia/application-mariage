@@ -37,6 +37,7 @@ services:
     environment:
       - PORT=3000
       - BACKEND_URL=http://backend:3001
+      - AUTHENTICATION_BACKEND_URL=http://authentication-backend:3002
     ports:
       - '3000:3000'
     depends_on:
@@ -51,6 +52,7 @@ services:
     environment:
       - PORT=3002
       - MONGO_URL=mongodb://user:user@mongo:27017/mariage-app?authSource=admin
+      - AUTHENTICATION_BACKEND_URL=http://authentication-backend:3002
     ports:
       - '3002:3002'
     depends_on:
