@@ -23,6 +23,9 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
     "http-proxy-middleware": "^3.0.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
