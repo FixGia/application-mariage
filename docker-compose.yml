@@ -1,0 +1,69 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_mariage
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: mariage-app
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: user
+    volumes:
+      - db_mariage_data:/data/db
+    networks:
+      - mariage-net
+
+  backend:
+    build: ./backend
+    container_name: backend_mariage
+    restart: unless-stopped
+    environment:
+      - PORT=3001
+      - MONGO_URL=mongodb://user:user@mongo:27017/mariage-app?authSource=admin
+    ports:
+      - '3001:3001'
+    depends_on:
+      - mongo
+    networks:
+      - mariage-net
+
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: gateway_mariage
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - BACKEND_URL=http://backend:3001
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - mariage-net
+
+  authentication-backend:
+    build: ./authentication-backend
+    container_name: authentication_backend_mariage
+    restart: unless-stopped
+    environment:
+      - PORT=3002
+      - MONGO_URL=mongodb://user:user@mongo:27017/mariage-app?authSource=admin
+    ports:
+      - '3002:3002'
+    depends_on:
+      - mongo
+    networks:
+      - mariage-net
+
+volumes:
+  db_mariage_data: {}
+
+networks:
+  mariage-net:
+    driver: bridge
+
+
+
