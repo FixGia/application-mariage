@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../../schema/user.schema';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,30 @@ export class AuthService {
   async createGoogleUser(googleId: string, email: string) {
     const createdUser = new this.userModel({ googleId, email, password: '' });
     return createdUser.save();
+  }
+
+  // Génère un refresh token (string random sécurisé)
+  generateRefreshToken(): string {
+    return crypto.randomBytes(64).toString('hex');
+  }
+
+  // Sauvegarde le refresh token pour un user
+  async saveRefreshToken(userId: string, refreshToken: string) {
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken });
+  }
+
+  // Supprime le refresh token (logout)
+  async removeRefreshToken(userId: string) {
+    await this.userModel.findByIdAndUpdate(userId, { refreshToken: null });
+  }
+
+  // Valide le refresh token et retourne le user si valide
+  async validateRefreshToken(userId: string, refreshToken: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user || user.refreshToken !== refreshToken) {
+      throw new UnauthorizedException('Refresh token invalide');
+    }
+    return user;
   }
 
   async register(email: string, password: string) {

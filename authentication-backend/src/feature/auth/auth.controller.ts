@@ -24,13 +24,17 @@ export class AuthController {
 
   @Post('login')
   async login(@Body('email') email: string, @Body('password') password: string) {
-    const user = await this.authService.validateUser(email, password);
+    const user : any = await this.authService.validateUser(email, password);
     if (!user) {
       return { message: 'Invalid credentials' };
     }
     // Génère un JWT
     const token = this.jwtService.sign({ sub: user._id, email: user.email });
-    return { message: 'Login successful', token };
+    // Génère et stocke un refresh token
+    const refreshToken = this.authService.generateRefreshToken();
+    const userId = user._id;
+    await this.authService.saveRefreshToken(userId, refreshToken);
+    return { message: 'Login successful', token, refreshToken };
   }
 
   // --- Google OAuth2 ---
@@ -46,14 +50,38 @@ export class AuthController {
     // req.user contient { googleId, email }
     const { googleId, email } = req.user as any;
     // Crée ou récupère l'utilisateur
-    let user = await this.authService.findByGoogleId(googleId);
+    let user: any = await this.authService.findByGoogleId(googleId);
     if (!user) {
       user = await this.authService.createGoogleUser(googleId, email);
     }
     // Génère un JWT
     const token = this.jwtService.sign({ sub: user._id, email: user.email });
-    // Redirige ou renvoie le token (ici, renvoi JSON pour dev)
-    return res.json({ token });
-    // Pour une vraie app front, tu peux faire : res.redirect(`http://localhost:4200/login?token=${token}`)
+    // Génère et stocke un refresh token
+    const refreshToken = this.authService.generateRefreshToken();
+    await this.authService.saveRefreshToken(user._id, refreshToken);
+    // Redirige ou renvoie le token et refreshToken (ici, renvoi JSON pour dev)
+    return res.json({ token, refreshToken });
+    // Pour une vraie app front, tu peux faire : res.redirect(`http://localhost:4200/login?token=${token}&refreshToken=${refreshToken}`)
+  }
+
+  @Get('protected')
+  @UseGuards(AuthGuard('jwt'))
+  getProtected(@Req() req: Request) {
+    return { message: 'Accès autorisé', user: req.user };
+  }
+
+  @Post('refresh')
+  async refresh(@Body('userId') userId: string, @Body('refreshToken') refreshToken: string) {
+    // Valide le refresh token
+    const user : any = await this.authService.validateRefreshToken(userId, refreshToken);
+    // Génère un nouveau JWT
+    const token = this.jwtService.sign({ sub: user._id, email: user.email });
+    return { token };
+  }
+
+  @Post('logout')
+  async logout(@Body('userId') userId: string) {
+    await this.authService.removeRefreshToken(userId);
+    return { message: 'Déconnexion réussie' };
   }
 }

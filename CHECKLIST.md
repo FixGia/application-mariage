@@ -3,8 +3,8 @@
 ## 1. Mise en place technique
 - [x] Création du monorepo Git
 - [x] Mise en place du Docker Compose pour tous les services
-- [ ] Configuration de l’API Gateway (proxy, sécurité de base)
-- [ ] Configuration du backend d’authentification
+- [x] Configuration de l’API Gateway (proxy, sécurité de base)
+- [] Configuration du backend d’authentification
 
 ## 2. Authentification & sécurité
 - [ ] Inscription/connexion des invités (API, mobile)
@@ -38,6 +38,11 @@
 - [ ] CI/CD (GitHub Actions ou autre)
 - [ ] Design soigné de l’application mobile
 - [ ] Version de démo (QR code test, compte démo)
+
+---
+## ⚠️ À prévoir pour la production
+- [ ] Restreindre l’origine CORS au(x) domaine(s) front en production
+- [ ] Utiliser une vraie clé secrète JWT et sécuriser toutes les variables sensibles en production
 
 ## 7. Monitoring & logs
 - [ ] Centralisation des logs (gateway + backends)
