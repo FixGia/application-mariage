@@ -3,6 +3,8 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class User extends Document {
+  @Prop()
+  consentAcceptedAt?: Date;
   @Prop({ required: true, unique: true })
   email: string;
 
