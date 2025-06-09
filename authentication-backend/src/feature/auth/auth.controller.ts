@@ -28,13 +28,28 @@ export class AuthController {
     if (!user) {
       return { message: 'Invalid credentials' };
     }
-    // Génère un JWT
-    const token = this.jwtService.sign({ sub: user._id, email: user.email });
+    // Génère un JWT incluant le rôle
+    const token = this.jwtService.sign({ sub: user._id, email: user.email, role: user.role });
     // Génère et stocke un refresh token
     const refreshToken = this.authService.generateRefreshToken();
     const userId = user._id;
     await this.authService.saveRefreshToken(userId, refreshToken);
     return { message: 'Login successful', token, refreshToken };
+  }
+
+  @Post('promote')
+  @UseGuards(AuthGuard('jwt'))
+  async promote(@Body('userId') userId: string, @Req() req: any) {
+    // Vérifie que l'appelant est admin
+    const currentUser = req.user;
+    if (!currentUser || currentUser.role !== 'admin') {
+      return { message: 'Unauthorized: only admin can promote.' };
+    }
+    const updatedUser = await this.authService.promoteToAdmin(userId);
+    if (!updatedUser) {
+      return { message: 'User not found or already admin.' };
+    }
+    return { message: 'User promoted to admin', user: updatedUser };
   }
 
   // --- Google OAuth2 ---

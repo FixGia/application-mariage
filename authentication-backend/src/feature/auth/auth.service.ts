@@ -48,8 +48,17 @@ export class AuthService {
 
   async register(email: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const createdUser = new this.userModel({ email, password: hashedPassword });
+    const createdUser = new this.userModel({ email, password: hashedPassword, role: 'user' });
     return createdUser.save();
+  }
+
+  async promoteToAdmin(userId: string) {
+    // Met à jour le rôle d'un user en admin
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { role: 'admin' },
+      { new: true }
+    );
   }
 
   async validateUser(email: string, password: string) {
