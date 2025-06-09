@@ -68,4 +68,28 @@ export class AuthService {
     }
     return null;
   }
+
+  // --- RGPD ---
+  async deleteUserById(userId: string) {
+    // Supprime l'utilisateur (et ses refresh tokens)
+    await this.userModel.findByIdAndDelete(userId);
+    // Optionnel : supprimer d'autres données liées
+    return;
+  }
+
+  async saveConsent(userId: string) {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { consentAcceptedAt: new Date() },
+      { new: true }
+    );
+  }
+
+  async exportUserData(userId: string) {
+    // Exporte toutes les infos du user sauf le hash du password
+    const user = await this.userModel.findById(userId).lean();
+    if (!user) return null;
+    const { password, refreshToken, ...userData } = user;
+    return userData;
+  }
 }
