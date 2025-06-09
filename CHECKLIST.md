@@ -4,7 +4,7 @@
 - [x] Création du monorepo Git
 - [x] Mise en place du Docker Compose pour tous les services
 - [x] Configuration de l’API Gateway (proxy, sécurité de base)
-- [] Configuration du backend d’authentification
+- [x] Configuration du backend d’authentification
 
 ## 2. Authentification & sécurité
 - [ ] Inscription/connexion des invités (API, mobile)
