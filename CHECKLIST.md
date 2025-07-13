@@ -7,15 +7,15 @@
 - [x] Configuration du backend d’authentification
 
 ## 2. Authentification & sécurité
-- [ ] Inscription/connexion des invités (API, mobile)
-- [ ] Génération et validation des tokens JWT
-- [ ] Sécurisation des routes sensibles
-- [ ] Gestion du consentement et RGPD
+- [x] Inscription/connexion des invités (API, mobile)
+- [x] Génération et validation des tokens JWT
+- [x] Sécurisation des routes sensibles
+- [x] Gestion du consentement et RGPD
 
 ## 3. Application mobile
-- [ ] Génération et affichage du QR code pour téléchargement
-- [ ] Écran d’inscription/connexion
-- [ ] Navigation principale (menu, accueil, etc.)
+- [] Génération et affichage du QR code pour téléchargement
+- [x] Écran d’inscription/connexion
+- [x] Navigation principale (menu, accueil, etc.)
 - [ ] Upload et affichage des photos
 - [ ] Affichage des messages/livre d’or
 
