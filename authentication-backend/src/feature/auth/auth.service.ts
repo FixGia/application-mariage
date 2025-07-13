@@ -13,6 +13,10 @@ export class AuthService {
     return this.userModel.findOne({ email });
   }
 
+  async findById(userId: string) {
+    return this.userModel.findById(userId);
+  }
+
   async findByGoogleId(googleId: string) {
     return this.userModel.findOne({ googleId });
   }

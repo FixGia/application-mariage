@@ -1,9 +1,10 @@
-import { Controller, Post, Body, BadRequestException, Get, UseGuards, Req, Res, HttpCode, UnauthorizedException, ForbiddenException, Delete } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, Get, UseGuards, Req, Res, HttpCode, UnauthorizedException, NotFoundException, ForbiddenException, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
+
 
 @Controller()
 export class AuthController {
@@ -127,6 +128,7 @@ export class AuthController {
     return { data: userData };
   }
 
+  @HttpCode(201)
   @Post('consent')
   @UseGuards(AuthGuard('jwt'))
   async saveConsent(@Req() req: any) {
@@ -134,7 +136,11 @@ export class AuthController {
     if (!userId) {
       throw new UnauthorizedException('User not authenticated');
     }
-    const user = await this.authService.saveConsent(userId);
-    return { consentAcceptedAt: req.user.consentAcceptedAt };
+    await this.authService.saveConsent(userId);
+    const user = await this.authService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return { consentAcceptedAt: user.consentAcceptedAt };
   }
 }

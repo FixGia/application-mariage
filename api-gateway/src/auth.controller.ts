@@ -96,11 +96,11 @@ export class AuthController {
       const response = await firstValueFrom(
         this.httpService.post(
           process.env.AUTH_BACKEND_URL + '/me/consent',
-          {
-            headers: {
-              Authorization: authorization,
-            },
-          }
+          {},
+         { headers: {
+            Authorization: authorization,
+          },
+        }
         )
       );
       return response.data;
