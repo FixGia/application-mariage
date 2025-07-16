@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'events_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -66,7 +67,12 @@ class HomeScreen extends StatelessWidget {
                     _HomeCard(
                       icon: Icons.photo_camera_outlined,
                       label: 'Photos',
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const EventsListScreen()),
+                        );
+                      },
                     ),
                     _HomeCard(
                       icon: Icons.person_outline,
@@ -80,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     _HomeCard(
                       icon: Icons.calendar_today_outlined,
-                      label: 'Calendrier',
+                      label: 'Evènements',
                       onTap: () {},
                     ),
                   ],
