@@ -16,8 +16,8 @@
 - [] Génération et affichage du QR code pour téléchargement
 - [x] Écran d’inscription/connexion
 - [x] Navigation principale (menu, accueil, etc.)
-- [ ] Upload et affichage des photos
-- [ ] Affichage des messages/livre d’or
+- [x] Upload et affichage des photos
+- [] Affichage des messages/livre d’or
 
 ## 4. Microservices et fonctionnalités
 - [ ] Service gestion des invités

@@ -67,8 +67,9 @@ let AuthController = class AuthController {
         }
     }
     async saveConsent(authorization) {
+        console.log('API Gateway - Received Authorization Header for consent:', authorization);
         try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(process.env.AUTH_BACKEND_URL + '/me/consent', {}, { headers: {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(process.env.AUTH_BACKEND_URL + '/consent', {}, { headers: {
                     Authorization: authorization,
                 },
             }));

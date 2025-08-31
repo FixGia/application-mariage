@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { User } from '../../schema/user.schema';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +53,12 @@ export class AuthService {
 
   async register(email: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const createdUser = new this.userModel({ email, password: hashedPassword, role: 'user' });
+    const createdUser = new this.userModel({
+      userId: uuidv4(),
+      email,
+      password: hashedPassword,
+      role: 'user'
+    });
     return createdUser.save();
   }
 
@@ -97,3 +103,5 @@ export class AuthService {
     return userData;
   }
 }
+
+

@@ -1,41 +1,82 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../services/event_service.dart';
 import 'upload_photo_screen.dart';
+import 'join_event_screen.dart';
 
-class EventsListScreen extends StatelessWidget {
+class EventsListScreen extends StatefulWidget {
   const EventsListScreen({super.key});
 
-  // Dummy data for demo
-  final List<Map<String, String>> events = const [
-    {'name': 'Mariage Alice & Bob', 'date': '12/08/2025'},
-    {'name': 'Anniversaire Clara', 'date': '01/09/2025'},
-    {'name': 'Fiançailles Emma & Hugo', 'date': '15/09/2025'},
-  ];
+  @override
+  State<EventsListScreen> createState() => _EventsListScreenState();
+}
+
+class _EventsListScreenState extends State<EventsListScreen> {
+  List<dynamic> _events = [];
+  bool _isLoading = true;
+  String? _error;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFAF7F2),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF7F2),
-        elevation: 0,
-        title: const Text(
-          'Mes évènements',
-          style: TextStyle(
-            color: Color(0xFF2D2D2D),
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
-            letterSpacing: 1.2,
-          ),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Color(0xFF2D2D2D)),
-      ),
-      body: ListView.separated(
+  void initState() {
+    super.initState();
+    _fetchEvents();
+  }
+
+  Future<void> _fetchEvents() async {
+    try {
+      final eventService = EventService();
+      const storage = FlutterSecureStorage();
+      final userId = await storage.read(key: 'userId');
+
+      if (userId == null) {
+        setState(() {
+          _error = "Impossible de récupérer l'identifiant utilisateur.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      final response = await eventService.getEventsForUser(userId);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _events = jsonDecode(response.body);
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = 'Erreur pour récupérer les évènements: ${response.body}';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = 'Une erreur est survenue: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_error != null) {
+      return Center(child: Text(_error!));
+    }
+
+    if (_events.isEmpty) {
+      return const Center(child: Text('Aucun évènement pour le moment.'));
+    }
+
+    return ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        itemCount: events.length,
+        itemCount: _events.length,
         separatorBuilder: (context, i) => const SizedBox(height: 20),
         itemBuilder: (context, i) {
-          final event = events[i];
+          final event = _events[i];
           return Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
@@ -118,6 +159,40 @@ class EventsListScreen extends StatelessWidget {
             ),
           );
         },
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF7F2),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFAF7F2),
+        elevation: 0,
+        title: const Text(
+          'Mes évènements',
+          style: TextStyle(
+            color: Color(0xFF2D2D2D),
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            letterSpacing: 1.2,
+          ),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Color(0xFF2D2D2D)),
+      ),
+      body: _buildBody(),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const JoinEventScreen()),
+          );
+        },
+        label: const Text('Rejoindre un évènement'),
+        icon: const Icon(Icons.group_add),
+        backgroundColor: const Color(0xFFE6CBA8),
+        foregroundColor: const Color(0xFF2D2D2D),
       ),
     );
   }

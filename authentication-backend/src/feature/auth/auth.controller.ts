@@ -37,7 +37,7 @@ export class AuthController {
     const refreshToken = this.authService.generateRefreshToken();
     const userId = user._id;
     await this.authService.saveRefreshToken(userId, refreshToken);
-    return { message: 'Login successful', token, refreshToken };
+    return { message: 'Login successful', token, refreshToken, userId };
   }
 
   @Post('promote')
@@ -129,7 +129,7 @@ export class AuthController {
   }
 
   @HttpCode(201)
-  @Post('consent')
+  @Post('me/consent')
   @UseGuards(AuthGuard('jwt'))
   async saveConsent(@Req() req: any) {
     const userId = req.user?.sub;

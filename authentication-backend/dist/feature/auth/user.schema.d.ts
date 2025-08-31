@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 export declare class User extends Document {
+    userId: string;
     email: string;
     googleId?: string;
     password: string;

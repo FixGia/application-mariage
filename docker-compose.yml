@@ -53,6 +53,8 @@ services:
       - PORT=3002
       - MONGO_URL=mongodb://user:user@mongo:27017/mariage-app?authSource=admin
       - AUTHENTICATION_BACKEND_URL=http://authentication-backend:3002
+      - JWT_SECRET=votre_super_secret_jwt_a_changer_en_production
+      - JWT_EXPIRES_IN=1d
     ports:
       - '3002:3002'
     depends_on:

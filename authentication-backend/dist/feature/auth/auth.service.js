@@ -18,6 +18,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const user_schema_1 = require("../../schema/user.schema");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 let AuthService = class AuthService {
     userModel;
     constructor(userModel) {
@@ -26,6 +27,9 @@ let AuthService = class AuthService {
     async findByEmail(email) {
         return this.userModel.findOne({ email });
     }
+    async findById(userId) {
+        return this.userModel.findById(userId);
+    }
     async findByGoogleId(googleId) {
         return this.userModel.findOne({ googleId });
     }
@@ -33,10 +37,29 @@ let AuthService = class AuthService {
         const createdUser = new this.userModel({ googleId, email, password: '' });
         return createdUser.save();
     }
+    generateRefreshToken() {
+        return crypto.randomBytes(64).toString('hex');
+    }
+    async saveRefreshToken(userId, refreshToken) {
+        await this.userModel.findByIdAndUpdate(userId, { refreshToken });
+    }
+    async removeRefreshToken(userId) {
+        await this.userModel.findByIdAndUpdate(userId, { refreshToken: null });
+    }
+    async validateRefreshToken(userId, refreshToken) {
+        const user = await this.userModel.findById(userId);
+        if (!user || user.refreshToken !== refreshToken) {
+            throw new common_1.UnauthorizedException('Refresh token invalide');
+        }
+        return user;
+    }
     async register(email, password) {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const createdUser = new this.userModel({ email, password: hashedPassword });
+        const createdUser = new this.userModel({ email, password: hashedPassword, role: 'user' });
         return createdUser.save();
+    }
+    async promoteToAdmin(userId) {
+        return this.userModel.findByIdAndUpdate(userId, { role: 'admin' }, { new: true });
     }
     async validateUser(email, password) {
         const user = await this.userModel.findOne({ email });
@@ -44,6 +67,20 @@ let AuthService = class AuthService {
             return user;
         }
         return null;
+    }
+    async deleteUserById(userId) {
+        await this.userModel.findByIdAndDelete(userId);
+        return;
+    }
+    async saveConsent(userId) {
+        return this.userModel.findByIdAndUpdate(userId, { consentAcceptedAt: new Date() }, { new: true });
+    }
+    async exportUserData(userId) {
+        const user = await this.userModel.findById(userId).lean();
+        if (!user)
+            return null;
+        const { password, refreshToken, ...userData } = user;
+        return userData;
     }
 };
 exports.AuthService = AuthService;

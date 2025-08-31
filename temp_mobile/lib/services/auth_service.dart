@@ -10,9 +10,10 @@ class AuthService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   // Sauvegarde le JWT et le refreshToken
-  Future<void> saveTokens(String token, String refreshToken) async {
+  Future<void> saveTokens(String token, String refreshToken, String userId) async {
     await _storage.write(key: 'jwt', value: token);
     await _storage.write(key: 'refreshToken', value: refreshToken);
+    await _storage.write(key: 'userId', value: userId);
   }
 
   // Récupère le JWT
@@ -29,6 +30,7 @@ class AuthService {
   Future<void> clearTokens() async {
     await _storage.delete(key: 'jwt');
     await _storage.delete(key: 'refreshToken');
+    await _storage.delete(key: 'userId');
   }
 
   // Inscription
@@ -51,7 +53,7 @@ class AuthService {
     // Si succès, stocke les tokens
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      await saveTokens(data['token'], data['refreshToken']);
+      await saveTokens(data['token'], data['refreshToken'], data['userId']);
     }
     return response;
   }
@@ -61,7 +63,7 @@ class AuthService {
     final token = await getToken();
     print('TOKEN RGPD: $token');
     final response = await http.post(
-      Uri.parse('$baseUrl/consent'),
+      Uri.parse('$baseUrl/me/consent'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -96,5 +98,11 @@ class AuthService {
       await clearTokens();
     }
     return response;
+  }
+
+  // Déconnexion
+  Future<void> logout() async {
+    // Appelle la méthode pour effacer les tokens du stockage sécurisé
+    await clearTokens();
   }
 }

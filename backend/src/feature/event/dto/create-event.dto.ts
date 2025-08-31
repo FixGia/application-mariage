@@ -6,4 +6,5 @@ export class CreateEventDto {
   description: string;
   date: Date;
   creatorId: string;
+  password: string;
 }

@@ -3,6 +3,14 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class User extends Document {
+
+
+  @Prop({ required: true })
+  userId: string;
+
+  @Prop()
+  googleId?: string;
+
   @Prop()
   consentAcceptedAt?: Date;
   @Prop({ required: true, unique: true })

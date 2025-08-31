@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
+import { JoinEventDto } from './dto/join-event.dto';
 
 @Controller('events')
 export class EventController {
@@ -11,9 +12,19 @@ export class EventController {
     return this.eventService.create(createEventDto);
   }
 
+  @Post('join')
+  join(@Body() joinEventDto: JoinEventDto) {
+    return this.eventService.join(joinEventDto);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);
+  }
+
+  @Get('user/:userId')
+  findForUser(@Param('userId') userId: string) {
+    return this.eventService.findAllForUser(userId);
   }
 
   @Get()

@@ -45,6 +45,18 @@ async function bootstrap() {
       target: process.env.AUTHENTICATION_BACKEND_URL || 'http://localhost:3002',
       changeOrigin: true,
       pathRewrite: { '^/auth': '' },
+      on: {
+        proxyReq: (proxyReq, req, res) => {
+          console.log(`[API-GATEWAY] Proxying '${req.method} ${req.url}' to ${process.env.AUTHENTICATION_BACKEND_URL || 'http://localhost:3002'}${proxyReq.path}`);
+          console.log('[API-GATEWAY] Request Headers:', JSON.stringify(req.headers, null, 2));
+        },
+        proxyRes: (proxyRes, req, res) => {
+          console.log(`[API-GATEWAY] Received response with status: ${proxyRes.statusCode}`);
+        },
+        error: (err, req, res) => {
+          console.error('[API-GATEWAY] Proxy error:', err);
+        },
+      },
     })
   )
 

@@ -1,6 +1,7 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Inject, Delete, Get, Headers } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { CreateUserPayload } from '../payload/CreateUserPayload';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +12,7 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() body: any) {
+  async register(@Body() body: CreateUserPayload) {
     try {
       const response = await firstValueFrom(
         this.httpService.post(
@@ -92,10 +93,11 @@ export class AuthController {
 
   @Post('consent')
   async saveConsent(@Headers('authorization') authorization: string) {
+    console.log('API Gateway - Received Authorization Header for consent:', authorization);
     try {
       const response = await firstValueFrom(
         this.httpService.post(
-          process.env.AUTH_BACKEND_URL + '/me/consent',
+          process.env.AUTH_BACKEND_URL + '/consent',
           {},
          { headers: {
             Authorization: authorization,

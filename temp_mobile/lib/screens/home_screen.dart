@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'events_list_screen.dart';
+import 'event_creation.dart';
+import 'event_manage_screen.dart';
+import 'home_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -64,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisSpacing: 24,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    _HomeCard(
+                    HomeCard(
                       icon: Icons.photo_camera_outlined,
                       label: 'Photos',
                       onTap: () {
@@ -74,20 +77,25 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    _HomeCard(
+                    HomeCard(
                       icon: Icons.person_outline,
                       label: 'Profil',
                       onTap: () {},
                     ),
-                    _HomeCard(
+                    HomeCard(
                       icon: Icons.settings_outlined,
                       label: 'Réglages',
                       onTap: () {},
                     ),
-                    _HomeCard(
-                      icon: Icons.calendar_today_outlined,
-                      label: 'Evènements',
-                      onTap: () {},
+                    HomeCard(
+                      icon: Icons.edit_calendar_outlined,
+                      label: 'Gérer mes évènements',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const EventManageScreen()),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -99,45 +107,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+          
 
-class _HomeCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _HomeCard({required this.icon, required this.label, required this.onTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 38, color: Color(0xFFE6CBA8)),
-            const SizedBox(height: 14),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xFF2D2D2D),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

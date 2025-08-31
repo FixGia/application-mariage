@@ -1,7 +1,10 @@
 import { Document } from 'mongoose';
 export declare class User extends Document {
+    consentAcceptedAt?: Date;
     email: string;
     password: string;
+    role: 'user' | 'admin';
+    refreshToken?: string;
 }
 export declare const UserSchema: import("mongoose").Schema<User, import("mongoose").Model<User, any, any, any, Document<unknown, any, User, any> & User & Required<{
     _id: unknown;

@@ -17,7 +17,10 @@ export class Event extends Document {
   date: Date;
 
   @Prop({ required: true })
-  creatorId: string; 
+  creatorId: string;
+
+  @Prop({ required: true })
+  password: string; 
 
   @Prop({ type: [String], default: [] })
   invitedUserIds: string[]; 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
-import 'consent_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -37,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Inscription réussie, on peut enchaîner sur le consentement RGPD
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ConsentScreen()),
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
     } else {
       setState(() {
